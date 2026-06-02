@@ -90,11 +90,61 @@
             let form = document.querySelector("form");
             form.addEventListener("submit", (e) => {
                 e.preventDefault();
+
                 let output = document.querySelector("output");
                 let firstNum = document.querySelector("#first-num").value;
                 let secondNum = document.querySelector("#second-num").value;
                 let operator = document.querySelector("#operator").value;
-                output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+
+                try {
+                    if (output === null) {
+                        throw new Error(
+                            "Output element not found",
+                        );
+                    }
+
+                    if (firstNum === "" || secondNum === "") {
+                        throw new Error("Please enter both numbers");
+                    }
+
+                    firstNum = Number(firstNum);
+                    secondNum = Number(secondNum);
+
+                    if (Number.isNaN(firstNum) || Number.isNaN(secondNum)) {
+                        throw new Error("Both inputs must be valid numbers.");
+                    }
+
+                    if (operator === "/" && secondNum === 0) {
+                        throw new Error("Divide by zero error.");
+                    }
+
+                    let result;
+
+                    if (operator === "+") {
+                        result = firstNum + secondNum;
+                    } else if (operator === "-") {
+                        result = firstNum - secondNum;
+                    } else if (operator === "*") {
+                        result = firstNum * secondNum;
+                    } else if (operator === "/") {
+                        result = firstNum / secondNum;
+                    } else {
+                        throw new Error("Invalid operator");
+                    }
+
+                    output.textContent = result;
+                    console.log("Calculation successful:", result);
+                } catch (error) {
+                    console.error("Calculator error:", error.message);
+
+                    if (output !== null) {
+                        output.textContent = "Error: " + error.message;
+                    }
+                } finally {
+                    console.log(
+                        "Calculator try/catch/finally finished running",
+                    );
+                }
             });
 
             let errorBtns = Array.from(
@@ -120,7 +170,10 @@
             });
 
             errorBtns[4].addEventListener("click", () => {
-                console.assert(false, "Console Assert demo failed on purpose");
+                console.assert(
+                    false,
+                    "Console Assert demo failed (on purpose)",
+                );
             });
 
             errorBtns[5].addEventListener("click", () => {
@@ -138,7 +191,6 @@
             errorBtns[8].addEventListener("click", () => {
                 console.group("Console Group Demo");
                 console.log("This is inside the group");
-                console.log("Click Console Group End to close the group");
             });
 
             errorBtns[9].addEventListener("click", () => {
