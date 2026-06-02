@@ -5,6 +5,15 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Lab 9</title>
+        <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+        <script>
+            window.TrackJS &&
+                TrackJS.install({
+                    token: "ce7ca528f00141ed84ef7372492be278",
+                    application: "Lab 9",
+                    userId: "jrengaraj",
+                });
+        </script>
 
         <style>
             button {
@@ -87,7 +96,26 @@
         </main>
 
         <script>
+            class CalculatorError extends Error {
+                constructor(message) {
+                    super(message);
+                    this.name = "CalculatorError";
+                }
+            }
+
+            window.onerror = function (message, source, lineno, colno, error) {
+                console.log("A global error was caught!");
+                console.log("Message:", message);
+                console.log("Source:", source);
+                console.log("Line:", lineno);
+                console.log("Column:", colno);
+                console.log("Error object:", error);
+
+                return false;
+            };
+
             let form = document.querySelector("form");
+
             form.addEventListener("submit", (e) => {
                 e.preventDefault();
 
@@ -98,24 +126,24 @@
 
                 try {
                     if (output === null) {
-                        throw new Error(
-                            "Output element not found",
-                        );
+                        throw new CalculatorError("Output element not found");
                     }
 
                     if (firstNum === "" || secondNum === "") {
-                        throw new Error("Please enter both numbers");
+                        throw new CalculatorError("Please enter both numbers");
                     }
 
                     firstNum = Number(firstNum);
                     secondNum = Number(secondNum);
 
                     if (Number.isNaN(firstNum) || Number.isNaN(secondNum)) {
-                        throw new Error("Both inputs must be valid numbers.");
+                        throw new CalculatorError(
+                            "Both inputs must be valid numbers.",
+                        );
                     }
 
                     if (operator === "/" && secondNum === 0) {
-                        throw new Error("Divide by zero error.");
+                        throw new CalculatorError("Divide by zero error.");
                     }
 
                     let result;
@@ -129,13 +157,21 @@
                     } else if (operator === "/") {
                         result = firstNum / secondNum;
                     } else {
-                        throw new Error("Invalid operator");
+                        throw new CalculatorError("Invalid operator");
                     }
 
                     output.textContent = result;
                     console.log("Calculation successful:", result);
                 } catch (error) {
-                    console.error("Calculator error:", error.message);
+                    if (error instanceof CalculatorError) {
+                        console.error(
+                            "Custom calculator error:",
+                            error.name,
+                            error.message,
+                        );
+                    } else {
+                        console.error("Unexpected error:", error);
+                    }
 
                     if (output !== null) {
                         output.textContent = "Error: " + error.message;
